@@ -16,22 +16,11 @@ func (c *MockCaller) Call(ctx context.Context) error {
 	return args.Error(0)
 }
 
-func TestMustCall(t *testing.T) {
-	m := MockCaller{}
-	ctx := context.Background()
-
-	m.On("Call", mock.AnythingOfType("context.backgroundCtx")).
-		Return(nil)
-
-	MustCall(ctx, &m)
-
-	m.AssertExpectations(t)
-}
-
 type testInterface interface {
 	X() string
 }
 
+// passes ✅, as context.Background and context.TODO both implement context.Context
 func TestMustCallAnythingImplementing(t *testing.T) {
 	m := MockCaller{}
 
@@ -55,6 +44,7 @@ func TestMustCallAnythingImplementing(t *testing.T) {
 	m.AssertExpectations(t)
 }
 
+// fails ❌, as context.Background doesn't implement testInterface
 func TestMustCallAnythingImplementingFails(t *testing.T) {
 	m := MockCaller{}
 	ctx := context.Background()
